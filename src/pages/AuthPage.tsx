@@ -1,5 +1,7 @@
 import { useState } from "react"
 import { Github, Linkedin, Anchor } from "lucide-react"
+import LoginForm from "../components/auth/LoginForm"
+import SignupForm from "../components/auth/SignupForm"
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true)
@@ -44,9 +46,9 @@ const AuthPage = () => {
       {/* form */}
       <div className="flex-1 bg-gray-900 flex justify-center items-center p-8">
         {isLogin ? (
-          <div>Login Form</div>
+          <LoginForm/>
         ) : (
-          <div>Sign Up Form</div>
+          <SignupForm/>
         )}
       </div>
     </div>
