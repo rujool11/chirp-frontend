@@ -1,4 +1,6 @@
 import { useState } from "react"
+import { toast } from "react-toastify"
+import { Eye, EyeOff } from "lucide-react"
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -8,7 +10,7 @@ const SignupForm = () => {
     confirmPassword: "",
   })
 
-  const [error, setError] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -18,23 +20,40 @@ const SignupForm = () => {
     e.preventDefault()
     const { username, email, password, confirmPassword } = formData
 
+    // check for empty fields
     if (!username || !email || !password || !confirmPassword) {
-      setError("All fields are required.")
+      toast.error("all fields are required", {
+        position: "top-right",
+        theme: "dark",
+      })
       return
     }
 
+    // check email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      toast.error("please enter a valid email", {
+        position: "top-right",
+        theme: "dark",
+      })
+      return
+    }
+
+    // check password match
     if (password !== confirmPassword) {
-      setError("Passwords do not match.")
+      toast.error("passwords do not match", {
+        position: "top-right",
+        theme: "dark",
+      })
       return
     }
-
-    setError("")
-    console.log("Signup data:", formData)
-    // TODO: API call to backend
+    
+    // TODO: connect to backend
   }
 
   return (
     <form
+      noValidate
       onSubmit={handleSubmit}
       className="bg-gray-950 p-8 rounded-2xl w-full max-w-xl shadow-lg border border-gray-800"
     >
@@ -43,6 +62,7 @@ const SignupForm = () => {
       </h2>
 
       <div className="space-y-4">
+        {/* username */}
         <div>
           <label className="block text-sm text-gray-300 mb-1">Username</label>
           <input
@@ -55,6 +75,7 @@ const SignupForm = () => {
           />
         </div>
 
+        {/* email */}
         <div>
           <label className="block text-sm text-gray-300 mb-1">Email</label>
           <input
@@ -67,40 +88,52 @@ const SignupForm = () => {
           />
         </div>
 
-        <div>
+        {/* password */}
+        <div className="relative">
           <label className="block text-sm text-gray-300 mb-1">Password</label>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="password"
             placeholder="Enter your password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full bg-gray-900 text-white p-3 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-900 text-white p-3 pr-10 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <div
+            className="absolute right-3 top-9 text-gray-400 cursor-pointer"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </div>
         </div>
 
-        <div>
+        {/* confirm password */}
+        <div className="relative">
           <label className="block text-sm text-gray-300 mb-1">
-            Confirm Password
+            Confirm password
           </label>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="confirmPassword"
             placeholder="Re-enter your password"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="w-full bg-gray-900 text-white p-3 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-900 text-white p-3 pr-10 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <div
+            className="absolute right-3 top-9 text-gray-400 cursor-pointer"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </div>
         </div>
       </div>
-
-      {error && <p className="text-red-400 text-sm mt-3 text-center">{error}</p>}
 
       <button
         type="submit"
         className="w-full mt-6 bg-blue-600 hover:bg-blue-700 transition-colors text-white font-semibold py-3 rounded-lg"
       >
-        Sign Up
+        Sign up
       </button>
     </form>
   )

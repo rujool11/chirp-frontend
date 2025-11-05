@@ -1,4 +1,6 @@
 import { useState } from "react"
+import { toast } from "react-toastify"
+import { Eye, EyeOff } from "lucide-react"
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -6,7 +8,7 @@ const LoginForm = () => {
     password: "",
   })
 
-  const [error, setError] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -17,17 +19,30 @@ const LoginForm = () => {
     const { email, password } = formData
 
     if (!email || !password) {
-      setError("All fields are required.")
+      toast.warn("Please fill out all the fields", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 2500,
+      })
       return
     }
 
-    setError("")
-    console.log("Login data:", formData)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 2500,
+      })
+      return
+    }
+
     // TODO: connect to backend
   }
 
   return (
     <form
+      noValidate
       onSubmit={handleSubmit}
       className="bg-gray-950 p-8 rounded-2xl w-full max-w-xl shadow-lg border border-gray-800"
     >
@@ -36,6 +51,7 @@ const LoginForm = () => {
       </h2>
 
       <div className="space-y-4">
+        {/* email field */}
         <div>
           <label className="block text-sm text-gray-300 mb-1">Email</label>
           <input
@@ -48,20 +64,25 @@ const LoginForm = () => {
           />
         </div>
 
-        <div>
+        {/* password field (fixed) */}
+        <div className="relative">
           <label className="block text-sm text-gray-300 mb-1">Password</label>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="password"
             placeholder="Enter your password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full bg-gray-900 text-white p-3 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-900 text-white p-3 pr-10 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <div
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-9 text-gray-400 cursor-pointer"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </div>
         </div>
       </div>
-
-      {error && <p className="text-red-400 text-sm mt-3 text-center">{error}</p>}
 
       <button
         type="submit"

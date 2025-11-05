@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import AuthPage from './pages/AuthPage'
 import ErrorPage from './pages/ErrorPage'
+import { ToastContainer } from 'react-toastify'
 
 function App() {
 
@@ -15,6 +16,8 @@ function App() {
         <Route path='*' element={<ErrorPage/>}></Route>
       </Routes>
       </BrowserRouter>
+
+      <ToastContainer/>
     </div>
   )
 }
