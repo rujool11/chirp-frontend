@@ -1,8 +1,12 @@
 import { useState } from "react"
 import { toast } from "react-toastify"
 import { Eye, EyeOff } from "lucide-react"
+import { SignupAPI } from "../../api/auth"
+import { useAuth } from "../../context/AuthContext"
+import { useNavigate } from "react-router-dom"
 
 const SignupForm = () => {
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -11,12 +15,14 @@ const SignupForm = () => {
   })
 
   const [showPassword, setShowPassword] = useState(false)
+  const { login } = useAuth()
+  const navigate = useNavigate()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const { username, email, password, confirmPassword } = formData
 
@@ -47,8 +53,32 @@ const SignupForm = () => {
       })
       return
     }
+
+    try {
+      const data = await SignupAPI(formData.username, formData.email, formData.password)
+      login(data.token, data.user)
+      toast.success("Registered successfully", {
+        theme: "dark",
+        autoClose: 2500, 
+        position: "top-center"
+      })
+
+      navigate("/home")
+
+    } catch (err: any) {
+
+      const message =
+        err.response?.data?.error 
+        err.message || 
+        "Signup failed" // fallback
+
+      toast.error(message, {
+        theme: "dark",
+        position: "top-right",
+        autoClose: 2500
+      })
+    }
     
-    // TODO: connect to backend
   }
 
   return (

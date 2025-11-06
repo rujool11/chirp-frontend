@@ -1,6 +1,9 @@
 import { useState } from "react"
 import { toast } from "react-toastify"
 import { Eye, EyeOff } from "lucide-react"
+import { loginAPI } from "../../api/auth"
+import { useAuth } from "../../context/AuthContext"
+import { useNavigate } from "react-router-dom"
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -8,13 +11,16 @@ const LoginForm = () => {
     password: "",
   })
 
+  const navigate = useNavigate()
+  const { login } = useAuth()
+
   const [showPassword, setShowPassword] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const { email, password } = formData
 
@@ -37,7 +43,31 @@ const LoginForm = () => {
       return
     }
 
-    // TODO: connect to backend
+    try {
+      const data = await loginAPI(formData.email, formData.password)
+      login(data.token, data.user)
+      toast.success("Logged in successfully", {
+        theme: "dark", 
+        autoClose: 2500,
+        position: "top-center"
+      })
+
+      navigate("/home")
+
+    } catch (err: any) {
+
+    const message =
+      err.response?.data?.error || // from Go backend { "error": "msg" }
+      err.message || // axios/network errors
+      "Login failed" // fallback
+
+      toast.error(message, {
+        theme: "dark",
+        position: "top-right",
+        autoClose: 2500
+      })
+
+    }
   }
 
   return (
