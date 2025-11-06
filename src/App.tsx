@@ -1,13 +1,24 @@
 import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import HomePage from './pages/HomePage'
+import AuthPage from './pages/AuthPage'
+import ErrorPage from './pages/ErrorPage'
+import { ToastContainer } from 'react-toastify'
 
 function App() {
 
   return (
-    <>
-      <div className="bg-cyan-500 text-2xl text-white font-bold bg-center">
-        <p>Hello from chirp-frontend</p>
-      </div>
-    </>
+    <div>
+      <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<AuthPage/>}></Route>
+        <Route path='/home' element={<HomePage/>}></Route>
+        <Route path='*' element={<ErrorPage/>}></Route>
+      </Routes>
+      </BrowserRouter>
+
+      <ToastContainer/>
+    </div>
   )
 }
 
